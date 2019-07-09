@@ -4,15 +4,14 @@ const keys = require('./keys')
 
 passport.use(
     new GoogleStrategy(
-         {
-        //google
-        callbackURL: "/auth/google/redirect",
-        clientID: keys.google.clientID,
-        clientSecret: keys.google.clientSecret,
-        
-    }, () => {
-        //back function
-    }
-    )) 
+        {
+            //google
+            callbackURL: "/auth/google/redirect",
+            clientID: keys.google.clientID,
+            clientSecret: keys.google.clientSecret,
 
-    console.log(keys.google.clientID);
+        }, (accessToken, refreshToken, profile, done) => {
+            //back function
+            console.log('log setup');
+        }
+    ))
