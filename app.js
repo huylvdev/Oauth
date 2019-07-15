@@ -6,6 +6,8 @@ var logger = require('morgan');
 const passportSetup = require('./config/passport-setup');
 const mongoose = require('mongoose');
 const keys = require('./config/keys');
+const cookieSession = require('cookie-session')
+const passport = require('passport')
 
 const authRoutes = require('./routes/auth-routes');
 var indexRouter = require('./routes/index');
@@ -16,10 +18,17 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-mongoose.connect(keys.mongodb.dbURL,{ useNewUrlParser: true },  ()=>{
+app.use(cookieSession({
+  maxAge: 24 * 60 * 60 * 100,
+  keys: [keys.session.cookieKey]
+}))
+//intialize passport
+app.use(passport.initialize())
+app.use(passport.session())
+mongoose.connect(keys.mongodb.dbURL, { useNewUrlParser: true }, () => {
   console.log('connet monggodb')
 });
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -42,7 +51,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 3000);
+  res.status(err.status || 80);
   res.render('error');
 });
 
